@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-*",
+  "description": "Azure Key Vault implementation of ITokenSigningService for IdentityServer",
+  "authors": [ "Matt Cotterell" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "frameworks": {
+    "dnx451": {
+      "dependencies": {
+        "IdentityServer3": "2.1.1",
+        "Microsoft.Azure.KeyVault": "1.0.0"
+      }
+    }
+  }
+}
