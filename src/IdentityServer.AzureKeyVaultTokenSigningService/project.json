@@ -5,7 +5,6 @@
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
-
   "frameworks": {
     "dnx451": {
       "dependencies": {
@@ -13,5 +12,10 @@
         "Microsoft.Azure.KeyVault": "1.0.0"
       }
     }
+  },
+  "dependencies": {
+    "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.19.208020213",
+    "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351",
+    "Thinktecture.IdentityModel": "3.6.1"
   }
 }
