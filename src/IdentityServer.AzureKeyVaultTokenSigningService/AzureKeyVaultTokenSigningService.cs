@@ -71,13 +71,13 @@ namespace IdentityServer.AzureKeyVaultTokenSigningService
                 }
             }
 
-            var rawDataBytes = System.Text.Encoding.UTF8.GetBytes(jwt.RawHeader + "." + jwt.RawPayload); // TODO: Is UTF-8 correct?
+            var rawDataBytes = System.Text.Encoding.UTF8.GetBytes(jwt.EncodedHeader + "." + jwt.EncodedPayload); // TODO: Is UTF-8 correct?
 
             var keyVaultSignatureProvider = new AzureKeyVaultSignatureProvider(keyIdentifier, JsonWebKeySignatureAlgorithm.RS256, KeyVaultClientSecretAuthenticationCallback);
 
             var rawSignature = Convert.ToBase64String(keyVaultSignatureProvider.Sign(rawDataBytes));
 
-            return jwt.RawHeader + "." + jwt.RawPayload + "." + rawSignature;
+            return jwt.EncodedHeader + "." + jwt.EncodedPayload + "." + rawSignature;
         }
 
         private async Task<string> KeyVaultClientSecretAuthenticationCallback(string authority, string resource, string scope)
