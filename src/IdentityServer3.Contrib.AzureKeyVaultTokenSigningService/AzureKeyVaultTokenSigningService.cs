@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using IdentityServer3.Core;
 using IdentityServer3.Core.Models;
 using IdentityServer3.Core.Services;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.KeyVault.WebKey;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json.Linq;
 using AuthenticationContext = Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext;
-using System.Linq;
-using System.Security.Cryptography;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.KeyVault.WebKey;
 
-namespace IdentityServer.AzureKeyVaultTokenSigningService
+namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
 {
     // This project can output the Class library as a NuGet Package.
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".

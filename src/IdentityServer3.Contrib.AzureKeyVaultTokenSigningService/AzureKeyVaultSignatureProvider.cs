@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.WebKey;
 
-namespace IdentityServer.AzureKeyVaultTokenSigningService
+namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
 {
     public class AzureKeyVaultSignatureProvider : SignatureProvider
     {

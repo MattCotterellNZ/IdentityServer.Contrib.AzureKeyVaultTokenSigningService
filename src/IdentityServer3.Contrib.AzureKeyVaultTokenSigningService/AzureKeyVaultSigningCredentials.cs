@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens;
 
-namespace IdentityServer.AzureKeyVaultTokenSigningService
+namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
 {
     public class AzureKeyVaultSigningCredentials : SigningCredentials
     {
