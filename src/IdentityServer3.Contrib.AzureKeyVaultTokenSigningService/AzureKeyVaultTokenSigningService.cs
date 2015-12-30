@@ -9,6 +9,7 @@ using IdentityServer3.Core.Models;
 using IdentityServer3.Core.Services;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.WebKey;
+using Microsoft.Extensions.OptionsModel;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json.Linq;
 using AuthenticationContext = Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext;
@@ -19,9 +20,7 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class AzureKeyVaultTokenSigningService : ITokenSigningService
     {
-        private readonly string _keyIdentifier;
-        private readonly string _keyVaultClientId;
-        private readonly string _keyVaultClientSecret;
+        private readonly AzureKeyVaultTokenSigningServiceOptions _options;
         private byte[] _keyVaultKeyExponent;
         private byte[] _keyVaultKeyModulus;
 
@@ -29,14 +28,9 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
         /// Initializes a new instance of the <see cref="AzureKeyVaultTokenSigningService"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        /// <param name="keyIdentifier"></param>
-        /// <param name="keyVaultClientId"></param>
-        /// <param name="keyVaultClientSecret"></param>
-        public AzureKeyVaultTokenSigningService(string keyIdentifier, string keyVaultClientId, string keyVaultClientSecret)
+        public AzureKeyVaultTokenSigningService(IOptions<AzureKeyVaultTokenSigningServiceOptions> options)
         {
-            _keyIdentifier = keyIdentifier;
-            _keyVaultClientId = keyVaultClientId;
-            _keyVaultClientSecret = keyVaultClientSecret;
+            _options = options.Value;
         }
 
         /// <summary>
@@ -61,7 +55,7 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
             if (_keyVaultKeyExponent == null && _keyVaultKeyModulus == null)
             {
                 var keyVaultClient = new KeyVaultClient(KeyVaultClientAuthenticationCallback);
-                var keyBundle = await keyVaultClient.GetKeyAsync(_keyIdentifier).ConfigureAwait(false);
+                var keyBundle = await keyVaultClient.GetKeyAsync(_options.KeyIdentifier).ConfigureAwait(false);
                 
                 _keyVaultKeyExponent = keyBundle.Key.E;
                 _keyVaultKeyModulus = keyBundle.Key.N;
@@ -103,7 +97,7 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
             var header = new JwtHeader(keyVaultCredentials);
             if (keyVaultCredentials != null)
             {
-                header.Add("kid", _keyIdentifier);
+                header.Add("kid", _options.KeyIdentifier);
             }
 
             return header;
@@ -201,7 +195,7 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
         {
             var rawDataBytes = System.Text.Encoding.UTF8.GetBytes(jwt.EncodedHeader + "." + jwt.EncodedPayload); // TODO: Is UTF-8 correct?
 
-            var keyVaultSignatureProvider = new AzureKeyVaultSignatureProvider(_keyIdentifier, JsonWebKeySignatureAlgorithm.RS256, KeyVaultClientAuthenticationCallback);
+            var keyVaultSignatureProvider = new AzureKeyVaultSignatureProvider(_options.KeyIdentifier, JsonWebKeySignatureAlgorithm.RS256, KeyVaultClientAuthenticationCallback);
 
             var rawSignature = await Task.Run(() => Convert.ToBase64String(keyVaultSignatureProvider.Sign(rawDataBytes))).ConfigureAwait(false);
 
@@ -217,7 +211,7 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
         private async Task<string> KeyVaultClientAuthenticationCallback(string authority, string resource, string scope)
         {
             var authContext = new AuthenticationContext(authority);
-            ClientCredential clientCred = new ClientCredential(_keyVaultClientId, _keyVaultClientSecret);
+            ClientCredential clientCred = new ClientCredential(_options.ClientId, _options.ClientSecret);
             AuthenticationResult result = await authContext.AcquireTokenAsync(resource, clientCred);
 
             if (result == null)
