@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-alpha3",
+  "version": "1.0.0-alpha4",
   "title": "IdentityServer4.Contrib.AzureKeyVaultTokenSigningService",
   "description": "Azure Key Vault implementation of ITokenSigningService for IdentityServer4",
   "authors": [ "Matt Cotterell" ],
@@ -8,7 +8,8 @@
   "licenseUrl": "https://github.com/MattCotterellNZ/IdentityServer.Contrib.AzureKeyVaultTokenSigningService/blob/master/LICENSE",
   "releaseNotes": "NOTE: This is pre-release software, and has not yet been security tested. Do not use with Key Vaults or applications in production.",
   "frameworks": {
-    "net46": {}
+    "net46": { },
+    "dnx451": { }
   },
   "dependencies": {
     "Microsoft.Azure.KeyVault": "1.0.0",
