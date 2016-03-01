@@ -5,7 +5,10 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{21D59E66-5BAC-4470-9668-7554EFF14371}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		global.json = global.json
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer3.Contrib.AzureKeyVaultTokenSigningService", "src\IdentityServer3.Contrib.AzureKeyVaultTokenSigningService\IdentityServer3.Contrib.AzureKeyVaultTokenSigningService.xproj", "{E2D99014-4F0C-4B00-BB0D-21246A02B888}"
