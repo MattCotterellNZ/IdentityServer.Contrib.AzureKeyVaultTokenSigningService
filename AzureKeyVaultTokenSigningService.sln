@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{21D59E66-5BAC-4470-9668-7554EFF14371}"
 	ProjectSection(SolutionItems) = preProject
@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer3.Contrib.AzureKeyVaultTokenSigningService", "src\IdentityServer3.Contrib.AzureKeyVaultTokenSigningService\IdentityServer3.Contrib.AzureKeyVaultTokenSigningService.xproj", "{E2D99014-4F0C-4B00-BB0D-21246A02B888}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer4.Contrib.AzureKeyVaultTokenSigningService", "src\IdentityServer4.Contrib.AzureKeyVaultTokenSigningService\IdentityServer4.Contrib.AzureKeyVaultTokenSigningService.xproj", "{4BF4515A-1BA7-4DBA-B9E9-2657B6052DA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +22,10 @@ Global
 		{E2D99014-4F0C-4B00-BB0D-21246A02B888}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2D99014-4F0C-4B00-BB0D-21246A02B888}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2D99014-4F0C-4B00-BB0D-21246A02B888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BF4515A-1BA7-4DBA-B9E9-2657B6052DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BF4515A-1BA7-4DBA-B9E9-2657B6052DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BF4515A-1BA7-4DBA-B9E9-2657B6052DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BF4515A-1BA7-4DBA-B9E9-2657B6052DA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
