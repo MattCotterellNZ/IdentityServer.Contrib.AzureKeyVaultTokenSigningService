@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-alpha4",
+  "version": "1.0.0-alpha5",
   "title": "IdentityServer3.Contrib.AzureKeyVaultTokenSigningService",
   "description": "Azure Key Vault implementation of ITokenSigningService for IdentityServer3",
   "authors": [ "Matt Cotterell" ],
@@ -17,6 +17,6 @@
     "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
     "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.19.208020213",
     "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351",
-    "Thinktecture.IdentityModel": "3.6.1"
+    "Thinktecture.IdentityModel.Core": "1.4.0"
   }
 }
