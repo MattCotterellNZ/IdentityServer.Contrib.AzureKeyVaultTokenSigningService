@@ -8,6 +8,7 @@
   "licenseUrl": "https://github.com/MattCotterellNZ/IdentityServer.Contrib.AzureKeyVaultTokenSigningService/blob/master/LICENSE",
   "releaseNotes": "NOTE: This is pre-release software, and has not yet been security tested. Do not use with Key Vaults or applications in production.",
   "frameworks": {
+    "net452": { },
     "net46": { },
     "dnx451": { }
   },
@@ -17,6 +18,7 @@
     "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
     "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.19.208020213",
     "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351",
-    "Thinktecture.IdentityModel.Core": "1.4.0"
+    "Thinktecture.IdentityModel.Core": "1.4.0",
+    "IdentityServer.Contrib.JsonWebKeyAdapter": "1.0.10"
   }
 }
