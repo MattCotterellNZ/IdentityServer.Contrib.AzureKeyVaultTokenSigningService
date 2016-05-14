@@ -16,6 +16,7 @@
     "IdentityServer4": "1.0.0-beta1-update1",
     "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
     "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.23.302261847",
-    "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351"
+    "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351",
+    "IdentityServer.Contrib.JsonWebKeyAdapter": "1.0.10"
   }
 }

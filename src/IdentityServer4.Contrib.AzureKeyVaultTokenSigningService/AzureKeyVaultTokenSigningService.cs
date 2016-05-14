@@ -8,12 +8,10 @@ using IdentityServer4.Core.Services;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using IdentityModel;
+using IdentityServer.Contrib.JsonWebKeyAdapter;
 using IdentityServer4.Core;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.WebKey;
 using Microsoft.Extensions.OptionsModel;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using AuthenticationContext = Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext;
 
 namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
 {
@@ -21,17 +19,20 @@ namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class AzureKeyVaultTokenSigningService : ITokenSigningService
     {
+        private readonly IPublicKeyProvider _publicKeyProvider;
         private readonly AzureKeyVaultTokenSigningServiceOptions _options;
-        private byte[] _keyVaultKeyExponent;
-        private byte[] _keyVaultKeyModulus;
+        private readonly AzureKeyVaultAuthentication _authentication;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureKeyVaultTokenSigningService"/> class.
         /// </summary>
+        /// <param name="publicKeyProvider">The public key provider.</param>
         /// <param name="options">The options.</param>
-        public AzureKeyVaultTokenSigningService(IOptions<AzureKeyVaultTokenSigningServiceOptions> options)
+        public AzureKeyVaultTokenSigningService(IPublicKeyProvider publicKeyProvider, IOptions<AzureKeyVaultTokenSigningServiceOptions> options)
         {
+            _publicKeyProvider = publicKeyProvider;
             _options = options.Value;
+            _authentication = new AzureKeyVaultAuthentication(_options.ClientId, _options.ClientSecret);
         }
 
         /// <summary>
@@ -53,23 +54,17 @@ namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
         /// <returns>The signing credential</returns>
         protected virtual async Task<AzureKeyVaultSigningCredentials> GetSigningCredentialsAsync()
         {
-            if (_keyVaultKeyExponent == null && _keyVaultKeyModulus == null)
-            {
-                var keyVaultClient = new KeyVaultClient(KeyVaultClientAuthenticationCallback);
-                var keyBundle = await keyVaultClient.GetKeyAsync(_options.KeyIdentifier).ConfigureAwait(false);
-
-                _keyVaultKeyExponent = keyBundle.Key.E;
-                _keyVaultKeyModulus = keyBundle.Key.N;
-            }
+            var jwk = (await _publicKeyProvider.GetAsync()).FirstOrDefault();
+            if (jwk == null) throw new Exception("The public key provider service did not return a key."); // TODO: What's better than Exception? SecurityTokenSignatureKeyNotFoundException maybe?
 
             var rsa = RSA.Create();
             rsa.ImportParameters(new RSAParameters
             {
-                Exponent = _keyVaultKeyExponent,
-                Modulus = _keyVaultKeyModulus,
+                Exponent = Convert.FromBase64String(jwk.E),
+                Modulus = Convert.FromBase64String(jwk.N),
             });
-
             var securityKey = new RsaSecurityKey(rsa);
+
             return new AzureKeyVaultSigningCredentials(securityKey, SecurityAlgorithms.Sha256Digest);
         }
 
@@ -197,7 +192,7 @@ namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
         {
             var rawDataBytes = System.Text.Encoding.UTF8.GetBytes(jwt.EncodedHeader + "." + jwt.EncodedPayload); // TODO: Is UTF-8 correct?
 
-            var keyVaultSignatureProvider = new AzureKeyVaultSignatureProvider(_options.KeyIdentifier, JsonWebKeySignatureAlgorithm.RS256, KeyVaultClientAuthenticationCallback);
+            var keyVaultSignatureProvider = new AzureKeyVaultSignatureProvider(_options.KeyIdentifier, JsonWebKeySignatureAlgorithm.RS256, _authentication.KeyVaultClientAuthenticationCallback);
 
             var rawSignature = await Task.Run(() => Convert.ToBase64String(keyVaultSignatureProvider.Sign(rawDataBytes))).ConfigureAwait(false);
 
@@ -208,18 +203,6 @@ namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
             //    SignatureProviderFactory = new AzureKeyVaultSignatureProviderFactory()
             //};
             //return Task.FromResult(handler.WriteToken(jwt));
-        }
-
-        private async Task<string> KeyVaultClientAuthenticationCallback(string authority, string resource, string scope)
-        {
-            var authContext = new AuthenticationContext(authority);
-            ClientCredential clientCred = new ClientCredential(_options.ClientId, _options.ClientSecret);
-            AuthenticationResult result = await authContext.AcquireTokenAsync(resource, clientCred);
-
-            if (result == null)
-                throw new InvalidOperationException("Failed to obtain the JWT token");
-
-            return result.AccessToken;
         }
     }
 }
