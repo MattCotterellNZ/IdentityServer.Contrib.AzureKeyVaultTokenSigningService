@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer.Contrib.JsonWebKeyAdapter;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.OptionsModel;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Protocols;
 
 namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
