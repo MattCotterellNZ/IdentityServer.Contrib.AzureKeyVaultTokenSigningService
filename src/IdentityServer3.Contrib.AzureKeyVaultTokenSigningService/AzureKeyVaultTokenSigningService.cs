@@ -57,8 +57,8 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
             var rsa = RSA.Create();
             rsa.ImportParameters(new RSAParameters
             {
-                Exponent = Convert.FromBase64String(jwk.E),
-                Modulus = Convert.FromBase64String(jwk.N),
+                Exponent = FromBase64Url(jwk.E),
+                Modulus = FromBase64Url(jwk.N),
             });
             var securityKey = new RsaSecurityKey(rsa);
 
@@ -199,6 +199,15 @@ namespace IdentityServer3.Contrib.AzureKeyVaultTokenSigningService
             //    SignatureProviderFactory = new AzureKeyVaultSignatureProviderFactory()
             //};
             //return Task.FromResult(handler.WriteToken(jwt));
+        }
+
+        private static byte[] FromBase64Url(string base64Url)
+        {
+            string padded = base64Url.Length % 4 == 0
+                ? base64Url : base64Url + "====".Substring(base64Url.Length % 4);
+            string base64 = padded.Replace("_", "/")
+                .Replace("-", "+");
+            return Convert.FromBase64String(base64);
         }
     }
 }
