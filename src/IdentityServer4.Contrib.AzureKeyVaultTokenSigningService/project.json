@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-alpha5",
+  "version": "1.0.0-alpha6",
   "title": "IdentityServer4.Contrib.AzureKeyVaultTokenSigningService",
   "description": "Azure Key Vault implementation of ITokenSigningService for IdentityServer4",
   "authors": [ "Matt Cotterell" ],
@@ -16,6 +16,7 @@
     "IdentityServer4": "1.0.0-beta1-update1",
     "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
     "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.23.302261847",
-    "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351"
+    "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351",
+    "IdentityServer.Contrib.JsonWebKeyAdapter": "1.0.10"
   }
 }
