@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-alpha5",
+  "version": "1.0.0-alpha6",
   "title": "IdentityServer3.Contrib.AzureKeyVaultTokenSigningService",
   "description": "Azure Key Vault implementation of ITokenSigningService for IdentityServer3",
   "authors": [ "Matt Cotterell" ],
