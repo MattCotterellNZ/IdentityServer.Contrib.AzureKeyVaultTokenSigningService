@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
 {

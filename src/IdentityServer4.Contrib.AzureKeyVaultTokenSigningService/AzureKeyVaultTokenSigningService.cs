@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
@@ -8,29 +9,31 @@ using IdentityServer4.Core.Services;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using IdentityModel;
-using IdentityServer.Contrib.JsonWebKeyAdapter;
 using IdentityServer4.Core;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.Azure.KeyVault.WebKey;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
 {
     // This project can output the Class library as a NuGet Package.
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
-    public class AzureKeyVaultTokenSigningService : ITokenSigningService
+    public class AzureKeyVaultTokenSigningService : ITokenCreationService
     {
-        private readonly IPublicKeyProvider _publicKeyProvider;
         private readonly AzureKeyVaultTokenSigningServiceOptions _options;
         private readonly AzureKeyVaultAuthentication _authentication;
+        private readonly IKeyMaterialService _keyMaterialProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureKeyVaultTokenSigningService"/> class.
         /// </summary>
         /// <param name="publicKeyProvider">The public key provider.</param>
         /// <param name="options">The options.</param>
-        public AzureKeyVaultTokenSigningService(IPublicKeyProvider publicKeyProvider, IOptions<AzureKeyVaultTokenSigningServiceOptions> options)
+        public AzureKeyVaultTokenSigningService(IKeyMaterialService keyMaterialProvider, IOptions<AzureKeyVaultTokenSigningServiceOptions> options)
         {
-            _publicKeyProvider = publicKeyProvider;
+            _keyMaterialProvider = keyMaterialProvider;
             _options = options.Value;
             _authentication = new AzureKeyVaultAuthentication(_options.ClientId, _options.ClientSecret);
         }
@@ -42,31 +45,31 @@ namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
         /// <returns>
         /// A protected and serialized security token
         /// </returns>
-        public virtual async Task<string> SignTokenAsync(Token token)
+        public virtual async Task<string> CreateTokenAsync(Token token)
         {
-            var credentials = await GetSigningCredentialsAsync();
+            var credentials = await _keyMaterialProvider.GetSigningCredentialsAsync();
             return await CreateJsonWebToken(token, credentials);
         }
 
-        /// <summary>
-        /// Retrieves the signing credential (override to load key from alternative locations)
-        /// </summary>
-        /// <returns>The signing credential</returns>
-        protected virtual async Task<AzureKeyVaultSigningCredentials> GetSigningCredentialsAsync()
-        {
-            var jwk = (await _publicKeyProvider.GetAsync()).FirstOrDefault();
-            if (jwk == null) throw new Exception("The public key provider service did not return a key."); // TODO: What's better than Exception? SecurityTokenSignatureKeyNotFoundException maybe?
+        ///// <summary>
+        ///// Retrieves the signing credential (override to load key from alternative locations)
+        ///// </summary>
+        ///// <returns>The signing credential</returns>
+        //protected virtual async Task<AzureKeyVaultSigningCredentials> GetSigningCredentialsAsync()
+        //{
+        //    var jwk = await _keyMaterialProvider.GetSigningCredentialsAsync();
+        //    if (jwk == null) throw new Exception("The public key provider service did not return a key."); // TODO: What's better than Exception? SecurityTokenSignatureKeyNotFoundException maybe?
 
-            var rsa = RSA.Create();
-            rsa.ImportParameters(new RSAParameters
-            {
-                Exponent = FromBase64Url(jwk.E),
-                Modulus = FromBase64Url(jwk.N),
-            });
-            var securityKey = new RsaSecurityKey(rsa);
+        //    var rsa = RSA.Create();
+        //    rsa.ImportParameters(new RSAParameters
+        //    {
+        //        Exponent = FromBase64Url(jwk.E),
+        //        Modulus = FromBase64Url(jwk.N),
+        //    });
+        //    var securityKey = new RsaSecurityKey(rsa);
 
-            return new AzureKeyVaultSigningCredentials(securityKey, SecurityAlgorithms.Sha256Digest);
-        }
+        //    return new AzureKeyVaultSigningCredentials(securityKey, SecurityAlgorithms.Sha256Digest);
+        //}
 
         /// <summary>
         /// Creates the json web token.
@@ -74,7 +77,7 @@ namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
         /// <param name="token">The token.</param>
         /// <param name="credentials">The credentials.</param>
         /// <returns>The signed JWT</returns>
-        protected virtual async Task<string> CreateJsonWebToken(Token token, AzureKeyVaultSigningCredentials credentials)
+        protected virtual async Task<string> CreateJsonWebToken(Token token, SigningCredentials credentials)
         {
             var header = await CreateHeaderAsync(token, credentials);
             var payload = await CreatePayloadAsync(token);
@@ -88,7 +91,7 @@ namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
         /// <param name="token">The token.</param>
         /// <param name="keyVaultCredentials">The credentials.</param>
         /// <returns>The JWT header</returns>
-        protected virtual Task<JwtHeader> CreateHeaderAsync(Token token, AzureKeyVaultSigningCredentials keyVaultCredentials)
+        protected virtual Task<JwtHeader> CreateHeaderAsync(Token token, SigningCredentials keyVaultCredentials)
         {
             var header = new JwtHeader(keyVaultCredentials);
             if (keyVaultCredentials != null)

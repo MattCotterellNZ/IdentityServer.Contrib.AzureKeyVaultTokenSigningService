@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using IdentityServer.Contrib.JsonWebKeyAdapter;
 using Microsoft.Azure.KeyVault;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 
 namespace IdentityServer4.Contrib.AzureKeyVaultTokenSigningService
